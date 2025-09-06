@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ramya Shetty | Web Developer & Security Specialist</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+    <style>
+        :root {
+            --bg-color: #12121c;
+            --card-bg-color: rgba(23, 23, 39, 0.6);
+            --primary-color: #8a2be2;
+            --secondary-color: #4a00e0;
+            --text-color: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border-color: rgba(138, 43, 226, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        #computer-container {
+            width: 300px;
+            height: 250px;
+            position: relative;
+            transition: width 0.8s ease-in-out, height 0.8s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #computer-container.zoomed {
+            width: 95vw;
+            height: 90vh;
+            max-width: 1400px;
+        }
+
+        .computer-body {
+            width: 100%;
+            height: 200px;
+            background-color: #2a2a3a;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            transition: height 0.8s ease-in-out;
+            display: flex;
+        }
+
+        #computer-container.zoomed .computer-body {
+            height: 100%;
+        }
+        
+        .screen {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            border-radius: 5px;
+            transition: background-color 0.5s;
+            overflow: hidden; 
+            position: relative;
+        }
+        
+        .power-button {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 20px;
+            background-color: #1e1e2c;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 5;
+            transition: opacity 0.5s;
+        }
+
+        .power-icon {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        .power-button:hover .power-icon {
+            transform: scale(1.2);
+        }
+
+        /* --- Intro Modal --- */
+        #intro-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(18, 18, 28, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 150;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+            visibility: hidden;
+        }
+        
+        #intro-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--bg-color);
+            padding: 3rem;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 40px rgba(138, 43, 226, 0.3);
+        }
+        
+        .modal-content h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+         .modal-content h1 span {
+             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        /* --- Main Portfolio Wrapper --- */
+        #portfolio-content-wrapper {
+            opacity: 0;
+            transition: opacity 1s ease-in;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border-radius: 5px;
+        }
+        
+        #portfolio-content-wrapper::-webkit-scrollbar {
+            width: 8px;
+        }
+        #portfolio-content-wrapper::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+        #portfolio-content-wrapper::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            border: 2px solid var(--bg-color);
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(18, 18, 28, 0.75);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+        
+        .logo span {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-nav {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            background-color: rgba(138, 43, 226, 0.1);
+            padding: 0.5rem;
+            border-radius: 50px;
+        }
+        
+        .main-nav a {
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav a.active,
+        .main-nav a:hover {
+            color: white;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        /* --- General Section Styling --- */
+        main {
+           background-color: var(--bg-color);
+        }
+
+        section {
+            padding: 4rem 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            font-weight: 700;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .card {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(5px);
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #about p {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .skill-item {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .skill-item i {
+            margin-right: 1rem;
+            color: var(--primary-color);
+        }
+
+        .project-card img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .project-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tech-tags span {
+            background-color: rgba(138, 43, 226, 0.1);
+            color: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .project-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .project-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .project-links .link-live {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .project-links .link-code {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .project-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .contact-form {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            background-color: var(--bg-color);
+        }
+        
+        footer p {
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 768px) {
+             .main-nav {
+                width: 100%;
+                justify-content: space-around;
+             }
+             .main-nav a {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+             }
+             .logo {
+                display: none;
+             }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="computer-container">
+        <div class="computer-body">
+            <div class="screen">
+                <div id="intro-modal" class="hidden">
+                    <div class="modal-content">
+                        <h1>Welcome to the portfolio of <span>Ramya Shetty</span></h1>
+                        <p>A detail-oriented web developer with a passion for cybersecurity. Ready to explore my work?</p>
+                        <button id="continue-btn" class="btn btn-primary">Continue</button>
+                    </div>
+                </div>
+
+                <div id="portfolio-content-wrapper">
+                    <header>
+                        <div class="container">
+                            <nav>
+                                <a href="#" class="logo">Ramya<span>.dev</span></a>
+                                <div class="main-nav">
+                                    <a href="#about" class="nav-btn active">About</a>
+                                    <a href="#skills" class="nav-btn">Skills</a>
+                                    <a href="#projects" class="nav-btn">Projects</a>
+                                    <a href="#contact" class="nav-btn">Contact</a>
+                                </div>
+                            </nav>
+                        </div>
+                    </header>
+            
+                    <main>
+                        <div class="container">
+                            <section id="about" class="portfolio-section">
+                                <h2 class="section-title">About Me</h2>
+                                <p>As a recent MCA graduate specializing in Cybersecurity, I bridge the gap between development and security. I am passionate about writing clean, efficient code and implementing robust security measures to protect applications from modern threats. My goal is to leverage my skills to build web experiences that are not only beautiful and functional but also safe and reliable.</p>
+                            </section>
+            
+                            <section id="skills" class="portfolio-section">
+                                <h2 class="section-title">Technical Skills</h2>
+                                <div class="grid">
+                                    <div class="card">
+                                        <h3><i class="fas fa-code"></i> Frontend</h3>
+                                        <p class="skill-item"><i class="fab fa-js-square"></i> JavaScript (ES6+)</p>
+                                        <p class="skill-item"><i class="fas fa-atom"></i> Python</p>
+                                        <p class="skill-item"><i class="fab fa-angular"></i> Java</p>
+                                        <p class="skill-item"><i class="fab fa-html5"></i> HTML5 & CSS3</p>
+                                    </div>
+                                    <div class="card">
+                                        <h3><i class="fas fa-server"></i> Backend & Database</h3>
+                                        <p class="skill-item"><i class="fab fa-python"></i> Python & Flask</p>
+                                        <p class="skill-item"><i class="fab fa-php"></i> PHP</p>
+                                        <p class="skill-item"><i class="fas fa-database"></i> MySQL</p>
+                                        <p class="skill-item"><i class="fab fa-git-alt"></i> Git & Version Control</p>
+                                    </div>
+                                    
+                                </div>
+                            </section>
+            
+                            <section id="projects" class="portfolio-section">
+                                <h2 class="section-title">Featured Projects</h2>
+                                <div class="grid">
+                                    
+                                    <div class="card project-card">
+                                        <img src="https://placehold.co/600x400/12121c/8a2be2?text=Phishing+Detector" alt="Phishing Website Detector">
+                                        <h3>Phishing Website Detector</h3>
+                                        <p>A machine learning tool that analyzes URLs to detect potential phishing sites, deployed via a clean Flask backend API.</p>
+                                        <div class="tech-tags">
+                                            <span>Python</span><span>Machine Learning</span><span>Flask</span>
+                                        </div>
+                                         <div class="project-links">
+                                            <a href="https://github.com/Ramya23SH/phishing-website-detector" class="link-code"><i class="fab fa-github"></i> Source Code</a>
+                                        </div>
+                                    </div>
+                                     <div class="card project-card">
+                                        <img src="https://placehold.co/600x400/12121c/8a2be2?text=Event+Booking+UI" alt="Event Booking System">
+                                        <h3>Event Booking System</h3>
+                                        <p>A modern and responsive frontend for an event booking service, focusing on an intuitive user interface and seamless user experience.</p>
+                                         <div class="tech-tags">
+                                            <span>HTML5</span><span>CSS3</span><span>JavaScript</span>
+                                        </div>
+                                        <div class="project-links">
+                                            <a href="https://ramya23sh.github.io/eventbooking/" class="link-live"><i class="fas fa-external-link-alt"></i> Live Demo</a>
+                                            <a href="https://github.com/Ramya23SH/eventbooking" class="link-code"><i class="fab fa-github"></i> Source Code</a>
+                                        </div>
+                                    </div>
+                                    <div class="card project-card">
+                                        <img src="https://placehold.co/600x400/12121c/8a2be2?text=password_checker" alt="PASSWORD Strength C">
+                                        <h3>Password Checker</h3>
+                                        <div class="tech-tags">
+                                            <span>Python</span><span>Flask</span>
+                                        </div>
+                                         <div class="project-links">
+                                            <a href="https://github.com/Ramya23SH/password_checker" class="link-code"><i class="fab fa-github"></i> Source Code</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+            
+                            <section id="contact" class="portfolio-section">
+                                <h2 class="section-title">Get In Touch</h2>
+                                <form action="https://formsubmit.co/ramyshetty7760@gmail.com" method="POST" class="contact-form">
+                                    <input type="text" name="name" placeholder="Your Name" required />
+                                    <input type="email" name="email" placeholder="Your Email" required />
+                                    <textarea name="message" rows="6" placeholder="Your Message" required></textarea>
+                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                </form>
+                            </section>
+                        </div>
+                         <footer>
+                            <div class="container">
+                                <p>&copy; 2025 Ramya Shetty. Designed and built with a passion for code and security.</p>
+                            </div>
+                        </footer>
+                    </main>
+                </div>
+            </div>
+        </div>
+        <div class="power-button">
+            <i class="fas fa-power-off power-icon"></i>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const powerButton = document.querySelector('.power-button');
+            const computerContainer = document.getElementById('computer-container');
+            const introModal = document.getElementById('intro-modal');
+            const continueBtn = document.getElementById('continue-btn');
+            const portfolioContentWrapper = document.getElementById('portfolio-content-wrapper');
+            const navLinks = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.portfolio-section');
+
+            powerButton.addEventListener('click', () => {
+                if (computerContainer.classList.contains('zoomed')) return;
+
+                computerContainer.classList.add('zoomed');
+                powerButton.style.opacity = '0';
+                
+                setTimeout(() => {
+                    introModal.classList.remove('hidden');
+                    introModal.classList.add('visible');
+                    powerButton.classList.add('hidden');
+                }, 800);
+            });
+            
+            continueBtn.addEventListener('click', () => {
+                introModal.style.opacity = '0';
+                setTimeout(() => {
+                    introModal.classList.add('hidden');
+                    portfolioContentWrapper.style.opacity = '1';
+                }, 500);
+            });
+
+            // Smooth scroll for nav links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute("href");
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        const headerOffset = portfolioContentWrapper.querySelector('header').offsetHeight;
+                        const elementPosition = targetElement.offsetTop;
+                        const offsetPosition = elementPosition - headerOffset;
+                        
+                        portfolioContentWrapper.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Intersection Observer for scrollspy
+            const observerOptions = {
+                root: portfolioContentWrapper,
+                rootMargin: '-70px 0px 0px 0px', // Adjust rootMargin to account for sticky header height
+                threshold: 0.6 // Section is active when 60% visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
+
