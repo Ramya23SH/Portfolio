@@ -1590,7 +1590,9 @@
 
                     if (selectedContactMethod === 'whatsapp') {
                         const whatsappMessage = encodeURIComponent(`Hello Ramya,\n\nName: ${name}\nEmail: ${email}\n\nMessage: ${message}`);
-                        window.open(`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`, '_blank');
+                        // Same-page navigation reliably hands off to WhatsApp on
+                        // mobile browsers, unlike popup-style window.open calls.
+                        window.location.href = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
                     } else {
                         window.location.href = `mailto:${emailAddress}?subject=Portfolio%20Contact%20from%20${encodeURIComponent(name)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
                     }
@@ -1620,10 +1622,13 @@
 
             // Smaller touch screens open directly into the portfolio. This avoids
             // a fixed-size desktop boot screen hiding the content on phones/tablets.
-            if (window.matchMedia('(max-width: 768px)').matches) {
+            if (window.matchMedia('(max-width: 768px)').matches || navigator.maxTouchPoints > 0) {
                 computerContainer.classList.add('mobile-ready');
                 powerButton.classList.add('hidden');
                 revealPortfolio();
+                // Mobile browsers can skip IntersectionObserver callbacks inside
+                // nested scroll containers, so start these counters directly.
+                setTimeout(runCounters, 250);
             }
 
             // --- Smooth scroll & Active Nav State ---
@@ -1740,8 +1745,7 @@
                         entry.target.classList.add('appear');
                         
                         // Counter animation trigger
-                        if (entry.target.id === 'counter-section' && !entry.target.classList.contains('counted')) {
-                            entry.target.classList.add('counted');
+                        if (entry.target.id === 'counter-section') {
                             runCounters();
                         }
                         
@@ -1756,6 +1760,10 @@
 
             // --- Counter Animation ---
             function runCounters() {
+                const counterSection = document.getElementById('counter-section');
+                if (!counterSection || counterSection.classList.contains('counted')) return;
+                counterSection.classList.add('counted');
+
                 const counters = document.querySelectorAll('.counter');
                 const speed = 200; 
 
