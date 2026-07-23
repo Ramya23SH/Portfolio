@@ -82,9 +82,9 @@
         }
 
         #computer-container.zoomed {
-            width: 95vw;
-            height: 90vh;
-            max-width: 1400px;
+            width: 100vw;
+            height: 100dvh;
+            max-width: none;
         }
 
         .computer-body {
@@ -906,21 +906,198 @@
         }
 
         @media (max-width: 768px) {
-             .main-nav {
+            body {
+                align-items: flex-start;
+                overflow: auto;
+            }
+
+            #computer-container {
+                width: min(300px, calc(100vw - 2rem));
+                margin: 1rem auto;
+            }
+
+            #computer-container.zoomed {
+                width: 100vw;
+                height: 100dvh;
+                max-width: none;
+                margin: 0;
+            }
+
+            #computer-container.mobile-ready {
+                width: 100vw;
+                height: 100dvh;
+                max-width: none;
+                margin: 0;
+            }
+
+            #computer-container.mobile-ready .computer-body {
+                height: 100%;
+            }
+
+            .computer-body {
+                border-radius: 8px;
+            }
+
+            .container {
+                padding: 0 1.25rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 0.75rem;
+                padding: 0.75rem 0;
+            }
+
+            .main-nav {
                 width: 100%;
                 justify-content: space-around;
                 flex-wrap: wrap;
-             }
-             .main-nav a {
+            }
+            .main-nav a {
                 padding: 0.5rem 0.6rem;
                 font-size: 0.8rem;
-             }
-             .logo {
+            }
+            .logo {
                 display: none;
-             }
-             .hero-content h1 {
-                 font-size: 2.5rem;
-             }
+            }
+
+            section {
+                padding: 3.5rem 1rem;
+            }
+
+            .section-title {
+                font-size: clamp(1.9rem, 7vw, 2.5rem);
+                margin-bottom: 2.25rem;
+            }
+
+            .hero-content h1 {
+                font-size: clamp(2.2rem, 10vw, 2.8rem);
+            }
+
+            .typewriter {
+                font-size: clamp(1.2rem, 5vw, 1.6rem);
+            }
+
+            .hero-desc,
+            #about p {
+                font-size: 1rem;
+            }
+
+            .skills-grid,
+            .projects-grid,
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .glass-card {
+                padding: 1.5rem;
+            }
+
+            .project-card {
+                padding: 0;
+            }
+
+            .project-content {
+                padding: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 1.25rem;
+            }
+
+            .stat-item h2 {
+                font-size: 2.5rem;
+            }
+
+            .modal-content {
+                width: calc(100% - 2rem);
+                padding: 2rem 1.25rem;
+                max-height: calc(100dvh - 2rem);
+                overflow-y: auto;
+            }
+
+            .modal-content h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-nav {
+                gap: 0.25rem;
+                padding: 0.35rem;
+            }
+
+            .main-nav a {
+                padding: 0.4rem 0.45rem;
+                font-size: 0.72rem;
+            }
+
+            #hero {
+                min-height: 70vh;
+            }
+
+            .hero-buttons,
+            .project-links {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-buttons .btn,
+            .project-links a,
+            .contact-form .btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .filter-buttons {
+                gap: 0.6rem;
+                margin-bottom: 2rem;
+            }
+
+            .filter-btn {
+                padding: 0.45rem 0.85rem;
+                font-size: 0.78rem;
+            }
+
+            .timeline-item {
+                padding-left: 55px;
+                padding-right: 0;
+            }
+
+            .timeline::after {
+                left: 21px;
+            }
+
+            .timeline-item::after {
+                left: 13px;
+            }
+
+            .timeline-content {
+                padding: 1.25rem;
+            }
+
+            .info-item {
+                align-items: flex-start;
+            }
+
+            .info-text {
+                min-width: 0;
+            }
+
+            .info-text p,
+            .info-text a {
+                overflow-wrap: anywhere;
+            }
+
+            .choice-btn {
+                min-width: 0;
+            }
+
+            footer {
+                margin-top: 2rem;
+                padding: 2rem 0;
+            }
         }
     </style>
 </head>
@@ -1302,6 +1479,16 @@
             const emailAddress = 'ramyshetty7760@gmail.com';
             const whatsappNumber = '917760818172';
             let selectedContactMethod = 'email';
+            let portfolioStarted = false;
+
+            function revealPortfolio() {
+                if (portfolioStarted) return;
+                portfolioStarted = true;
+                introModal.classList.remove('visible');
+                introModal.classList.add('hidden');
+                portfolioContentWrapper.style.opacity = '1';
+                startTyping();
+            }
 
             choiceButtons.forEach(button => {
                 button.addEventListener('click', () => {
@@ -1346,11 +1533,17 @@
             continueBtn.addEventListener('click', () => {
                 introModal.style.opacity = '0';
                 setTimeout(() => {
-                    introModal.classList.add('hidden');
-                    portfolioContentWrapper.style.opacity = '1';
-                    startTyping(); // Start typing animation when content loads
+                    revealPortfolio();
                 }, 500);
             });
+
+            // Smaller touch screens open directly into the portfolio. This avoids
+            // a fixed-size desktop boot screen hiding the content on phones/tablets.
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                computerContainer.classList.add('mobile-ready');
+                powerButton.classList.add('hidden');
+                revealPortfolio();
+            }
 
             // --- Smooth scroll & Active Nav State ---
             navLinks.forEach(link => {
