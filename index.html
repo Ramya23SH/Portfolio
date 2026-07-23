@@ -34,11 +34,9 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.7;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: block;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
         }
         
@@ -61,6 +59,7 @@
         }
 
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
@@ -72,10 +71,9 @@
         
         /* --- Computer Boot-up --- */
         #computer-container {
-            width: 300px;
-            height: 250px;
+            width: 100%;
+            height: 100dvh;
             position: relative;
-            transition: width 0.8s ease-in-out, height 0.8s ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -89,11 +87,11 @@
 
         .computer-body {
             width: 100%;
-            height: 200px;
-            background-color: #2a2a3a;
-            border-radius: 10px;
-            padding: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.1);
+            height: 100%;
+            background-color: transparent;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
             position: relative;
             transition: height 0.8s ease-in-out;
             display: flex;
@@ -107,7 +105,7 @@
             width: 100%;
             height: 100%;
             background-color: #050505;
-            border-radius: 5px;
+            border-radius: 0;
             transition: background-color 0.5s;
             overflow: hidden; 
             position: relative;
@@ -129,6 +127,12 @@
             z-index: 5;
             transition: opacity 0.5s;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* The portfolio is a full-page website, not a fixed-size desktop widget. */
+        .power-button,
+        #intro-modal {
+            display: none !important;
         }
 
         .power-icon {
@@ -202,7 +206,7 @@
         
         /* --- Main Portfolio Wrapper --- */
         #portfolio-content-wrapper {
-            opacity: 0;
+            opacity: 1;
             transition: opacity 1s ease-in;
             height: 100%;
             overflow-y: auto;
@@ -315,8 +319,8 @@
 
         /* --- Scroll Animations --- */
         .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
+            opacity: 1;
+            transform: none;
             transition: opacity 0.8s ease, transform 0.8s ease;
         }
 
@@ -905,15 +909,92 @@
             }
         }
 
+        /* Use a normal, edge-to-edge page on tablets and phones. The monitor
+           animation is desktop-only because its fixed dimensions cause offsets
+           and blank areas on smaller viewports. */
+        @media (max-width: 1024px) {
+            html,
+            body {
+                width: 100%;
+                min-height: 100%;
+                overflow-x: hidden;
+            }
+
+            body {
+                display: block;
+            }
+
+            body::before {
+                position: fixed;
+            }
+
+            #computer-container,
+            #computer-container.zoomed,
+            #computer-container.mobile-ready {
+                width: 100%;
+                height: 100dvh;
+                min-height: 100dvh;
+                margin: 0;
+                max-width: none;
+            }
+
+            #computer-container .computer-body,
+            #computer-container.zoomed .computer-body,
+            #computer-container.mobile-ready .computer-body {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .screen,
+            #portfolio-content-wrapper {
+                border-radius: 0;
+            }
+
+            #portfolio-content-wrapper {
+                height: 100dvh;
+                opacity: 1 !important;
+            }
+
+            #intro-modal,
+            .power-button {
+                display: none !important;
+            }
+
+            .fade-in {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
         @media (max-width: 768px) {
+            .row{flex-direction: column;}
             body {
                 align-items: flex-start;
                 overflow: auto;
             }
 
+            /* Mobile content must never rely on JavaScript animations to appear. */
+            #portfolio-content-wrapper {
+                opacity: 1 !important;
+            }
+
+            #intro-modal {
+                display: none !important;
+            }
+
+            .fade-in {
+                opacity: 1;
+                transform: none;
+            }
+
             #computer-container {
-                width: min(300px, calc(100vw - 2rem));
-                margin: 1rem auto;
+                width: 100vw;
+                height: 100dvh;
+                max-width: none;
+                margin: 0;
             }
 
             #computer-container.zoomed {
