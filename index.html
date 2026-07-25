@@ -238,6 +238,7 @@
         }
 
         nav {
+            position: relative;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -257,30 +258,90 @@
         }
 
         .main-nav {
-            display: flex;
-            list-style: none;
+            display: none;
+            position: absolute;
+            top: calc(100% + 0.75rem);
+            right: 0.75rem;
+            z-index: 110;
+            width: min(18rem, calc(100vw - 2rem));
+            flex-direction: column;
             gap: 0.5rem;
-            background-color: rgba(255,255,255,0.05);
-            padding: 0.5rem;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.75rem 0.9rem;
+            background: rgba(13, 13, 22, 0.98);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(18px);
+            opacity: 0;
+            transform: translateY(-0.75rem);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
-        
+
+        .main-nav.menu-open {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .main-nav a {
             text-decoration: none;
             color: var(--text-secondary);
             font-weight: 600;
-            padding: 0.5rem 1.2rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
+            padding: 0.95rem 1rem;
+            border-radius: 14px;
+            transition: all 0.25s ease;
+            font-size: 0.95rem;
+            display: block;
+            width: 100%;
         }
 
         .main-nav a.active,
         .main-nav a:hover {
             color: white;
             background: linear-gradient(90deg, rgba(0,242,254,0.2), rgba(138,43,226,0.2));
-            box-shadow: inset 0 0 10px rgba(0,242,254,0.3);
+            box-shadow: inset 0 0 10px rgba(0,242,254,0.15);
+        }
+
+        .header-menu-toggle {
+            display: inline-flex;
+            width: 2.75rem;
+            height: 2.75rem;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 242, 254, 0.55);
+            border-radius: 10px;
+            background: rgba(13, 13, 22, 0.92);
+            color: var(--cyan);
+            cursor: pointer;
+            font-size: 1.15rem;
+            z-index: 120;
+        }
+
+        .header-menu-toggle.is-open {
+            color: white;
+        }
+
+        .header-menu-toggle.is-twirling {
+            animation: menu-twirl 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        .header-menu-toggle.is-twirling i {
+            transform: rotate(0deg);
+        }
+
+        @keyframes menu-panel-open {
+            from { opacity: 0; transform: translateY(-1rem) scale(0.92); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes menu-link-in {
+            from { opacity: 0; transform: translateX(0.75rem); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes menu-twirl {
+            from { transform: rotate(0); }
+            to { transform: rotate(360deg); }
         }
         
         /* --- General Section Styling --- */
@@ -548,33 +609,6 @@
         }
 
         /* --- Projects Section --- */
-        .filter-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-secondary);
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .filter-btn.active, .filter-btn:hover {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 15px rgba(138,43,226,0.4);
-        }
 
         .projects-grid {
             display: grid;
@@ -1062,20 +1096,46 @@
             }
 
             nav {
+                position: relative;
                 flex-direction: column;
                 gap: 0.75rem;
                 padding: 0.75rem 0;
+            }
+
+            .header-menu-toggle {
+                display: inline-flex;
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
             }
 
             .main-nav {
                 width: 100%;
                 justify-content: space-around;
                 flex-wrap: wrap;
+                display: none;
+                margin-top: 3.5rem;
             }
+
+            .main-nav.menu-open {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+                background: rgba(13, 13, 22, 0.94);
+                padding: 0.75rem 1rem;
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+            }
+
             .main-nav a {
-                padding: 0.5rem 0.6rem;
-                font-size: 0.8rem;
+                padding: 0.75rem 0.9rem;
+                font-size: 0.9rem;
+                width: 100%;
+                text-align: left;
             }
+
             .logo {
                 display: none;
             }
@@ -1237,7 +1297,7 @@
                         <div class="container">
                             <nav>
                                 <a href="#" class="logo">Ramya<span>.dev</span></a>
-                                <div class="main-nav">
+                                <div class="main-nav" id="main-navigation">
                                     <a href="#hero" class="nav-btn active">Home</a>
                                     <a href="#about" class="nav-btn">About</a>
                                     <a href="#skills" class="nav-btn">Skills</a>
@@ -1245,6 +1305,9 @@
                                     <a href="#experience" class="nav-btn">Experience</a>
                                     <a href="#contact" class="nav-btn">Contact</a>
                                 </div>
+                                <button class="header-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="main-navigation">
+                                    <i class="fas fa-bars"></i>
+                                </button>
                             </nav>
                         </div>
                     </header>
@@ -1281,7 +1344,7 @@
                                 <p>I am a dynamic professional with an MCA specialized in Cybersecurity. My passion lies at the intersection of creating innovative software and securing digital ecosystems. I bridge the gap between robust backend development, interactive frontend design, cyber security and intelligent AI models.</p>
                                 <br>
                                 <p>Whether it's building responsive web applications, developing machine learning models for anomaly detection, or conducting vulnerability assessments, my goal is to deliver secure, scalable, and intelligent solutions to complex real-world problems.</p>
-                            </div>Z
+                            </div>
                         </section>
             
                         <!-- SKILLS SECTION -->
@@ -1384,13 +1447,6 @@
                             <div class="container">
                                 <h2 class="section-title">Featured <span>Projects</span></h2>
                                 
-                                <div class="filter-buttons fade-in">
-                                    <button class="filter-btn active" data-filter="all">All</button>
-                                    <button class="filter-btn" data-filter="web">Web</button>
-                                    <button class="filter-btn" data-filter="cybersecurity">Cybersecurity</button>
-                                    <button class="filter-btn" data-filter="ai">AI</button>
-                                </div>
-
                                 <div class="projects-grid fade-in">
                                     <div class="glass-card project-card" data-category="cybersecurity ai">
                                         <div class="project-img-wrapper">
@@ -1665,21 +1721,56 @@
             }
 
             // --- Smooth scroll & Active Nav State ---
+            const menuToggle = document.querySelector('.header-menu-toggle');
+            const mainNav = document.getElementById('main-navigation');
+            const menuIcon = menuToggle.querySelector('i');
+
+            function closeMobileMenu() {
+                mainNav.classList.remove('menu-open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                menuToggle.classList.remove('is-open');
+                menuIcon.classList.remove('fa-xmark');
+                menuIcon.classList.add('fa-bars');
+            }
+
+            function openMobileMenu() {
+                mainNav.classList.add('menu-open');
+                menuToggle.setAttribute('aria-expanded', 'true');
+                menuToggle.classList.add('is-open');
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-xmark');
+            }
+
+            menuToggle && menuToggle.addEventListener('click', () => {
+                menuToggle.classList.add('is-twirling');
+                setTimeout(() => {
+                    menuToggle.classList.remove('is-twirling');
+                }, 500);
+
+                const isOpen = mainNav.classList.toggle('menu-open');
+                if (isOpen) {
+                    openMobileMenu();
+                } else {
+                    closeMobileMenu();
+                }
+            });
+
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
                     const targetId = this.getAttribute("href");
                     const targetElement = document.querySelector(targetId);
-                    if(targetElement) {
+                    if (targetElement) {
                         const headerOffset = portfolioContentWrapper.querySelector('header').offsetHeight;
                         const elementPosition = targetElement.offsetTop;
                         const offsetPosition = elementPosition - headerOffset;
-                        
+
                         portfolioContentWrapper.scrollTo({
                             top: offsetPosition,
                             behavior: 'smooth'
                         });
                     }
+                    closeMobileMenu();
                 });
             });
 
@@ -1738,31 +1829,6 @@
                 
                 setTimeout(startTyping, typeSpeed);
             }
-
-            // --- Project Filtering Logic ---
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const projectCards = document.querySelectorAll('.project-card');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    // Add active class to clicked button
-                    btn.classList.add('active');
-
-                    const filterValue = btn.getAttribute('data-filter');
-
-                    projectCards.forEach(card => {
-                        if (filterValue === 'all' || card.getAttribute('data-category').includes(filterValue)) {
-                            card.style.display = 'flex';
-                            setTimeout(() => card.style.opacity = '1', 10);
-                        } else {
-                            card.style.opacity = '0';
-                            setTimeout(() => card.style.display = 'none', 300);
-                        }
-                    });
-                });
-            });
 
             // --- Scroll Reveal Animations (Intersection Observer) ---
             const fadeElements = document.querySelectorAll('.fade-in');
