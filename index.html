@@ -282,6 +282,113 @@
             background: linear-gradient(90deg, rgba(0,242,254,0.2), rgba(138,43,226,0.2));
             box-shadow: inset 0 0 10px rgba(0,242,254,0.3);
         }
+
+        .header-menu-toggle {
+            display: none;
+            width: 2.75rem;
+            height: 2.75rem;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 242, 254, 0.55);
+            border-radius: 10px;
+            background: rgba(13, 13, 22, 0.9);
+            color: var(--cyan);
+            cursor: pointer;
+            font-size: 1.15rem;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        header.is-scrolled nav {
+            position: relative;
+            padding: 0.65rem 0;
+        }
+
+        header.is-scrolled .header-menu-toggle {
+            display: inline-flex;
+            animation: menu-button-enter 0.35s ease both;
+        }
+
+        header.is-scrolled .header-menu-toggle:hover {
+            transform: scale(1.08);
+            background: rgba(0, 242, 254, 0.15);
+            box-shadow: 0 0 18px rgba(0, 242, 254, 0.3);
+        }
+
+        header.is-scrolled .main-nav {
+            display: flex;
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            width: min(15rem, calc(100vw - 2rem));
+            flex-direction: column;
+            align-items: stretch;
+            padding: 0.5rem;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(-0.75rem) scale(0.96);
+            transform-origin: top right;
+            transition: opacity 0.25s ease, transform 0.3s ease, visibility 0.3s ease;
+        }
+
+        header.is-scrolled .main-nav.menu-open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+            animation: menu-panel-open 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        header.is-scrolled .main-nav.menu-open + .header-menu-toggle {
+            transform: rotate(90deg);
+            background: rgba(0, 242, 254, 0.15);
+        }
+
+        .header-menu-toggle.is-twirling {
+            animation: menu-twirl 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        header.is-scrolled .main-nav a {
+            padding: 0.7rem 1rem;
+            opacity: 0;
+            transform: translateX(0.75rem);
+            transition: opacity 0.25s ease, transform 0.25s ease, background 0.25s ease;
+        }
+
+        header.is-scrolled .main-nav.menu-open a {
+            opacity: 1;
+            transform: translateX(0);
+            animation: menu-link-in 0.35s ease both;
+        }
+
+        header.is-scrolled .main-nav.menu-open a:nth-child(1) { transition-delay: 0.05s; }
+        header.is-scrolled .main-nav.menu-open a:nth-child(2) { transition-delay: 0.1s; }
+        header.is-scrolled .main-nav.menu-open a:nth-child(3) { transition-delay: 0.15s; }
+        header.is-scrolled .main-nav.menu-open a:nth-child(4) { transition-delay: 0.2s; }
+        header.is-scrolled .main-nav.menu-open a:nth-child(5) { transition-delay: 0.25s; }
+        header.is-scrolled .main-nav.menu-open a:nth-child(6) { transition-delay: 0.3s; }
+
+        @keyframes menu-button-enter {
+            from { opacity: 0; transform: translateY(-0.5rem) scale(0.85); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes menu-panel-open {
+            from { opacity: 0; transform: translateY(-1.25rem) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes menu-link-in {
+            from { opacity: 0; transform: translateX(1.25rem); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes menu-twirl {
+            from { transform: rotate(0) scale(1); }
+            to { transform: rotate(360deg) scale(1.08); }
+        }
         
         /* --- General Section Styling --- */
         section {
@@ -344,9 +451,11 @@
         }
 
         .hero-content h1 {
-            font-size: 3.5rem;
+            /* Keep the complete greeting together while scaling it for each viewport. */
+            font-size: clamp(1.5rem, 8.3vw, 3.5rem);
             margin-bottom: 1rem;
             font-weight: 700;
+            white-space: nowrap;
         }
 
         .typewriter {
@@ -379,9 +488,45 @@
 
         .hero-buttons {
             display: flex;
+            flex-direction: column;
             gap: 1rem;
+            align-items: center;
+        }
+
+        .hero-icon-links {
+            display: flex;
+            align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .hero-icon-btn {
+            width: 3.25rem;
+            height: 3.25rem;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.25rem;
+            animation: icon-float 3s ease-in-out infinite;
+        }
+
+        .hero-icon-btn:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .hero-icon-btn:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .hero-icon-btn.btn-outline:hover {
+            animation-play-state: paused;
+            transform: translateY(-5px) scale(1.12);
+            box-shadow: 0 8px 20px rgba(0, 242, 254, 0.3);
+        }
+
+        @keyframes icon-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
         
         /* Buttons */
@@ -518,6 +663,14 @@
             flex-wrap: wrap;
         }
 
+        .filter-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .filter-btn {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
@@ -538,6 +691,22 @@
             box-shadow: 0 0 15px rgba(138,43,226,0.4);
         }
 
+        #filter-all:checked ~ .filter-buttons label[for="filter-all"],
+        #filter-web:checked ~ .filter-buttons label[for="filter-web"],
+        #filter-cybersecurity:checked ~ .filter-buttons label[for="filter-cybersecurity"],
+        #filter-ai:checked ~ .filter-buttons label[for="filter-ai"] {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(138,43,226,0.4);
+        }
+
+        #filter-web:checked ~ .projects-grid .project-card:not([data-category~="web"]),
+        #filter-cybersecurity:checked ~ .projects-grid .project-card:not([data-category~="cybersecurity"]),
+        #filter-ai:checked ~ .projects-grid .project-card:not([data-category~="ai"]) {
+            display: none;
+        }
+
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -549,6 +718,10 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+        }
+
+        .project-card[hidden] {
+            display: none;
         }
 
         .project-img-wrapper {
@@ -1029,6 +1202,11 @@
                 padding: 0.75rem 0;
             }
 
+            header.is-scrolled nav {
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+
             .main-nav {
                 width: 100%;
                 justify-content: space-around;
@@ -1052,7 +1230,7 @@
             }
 
             .hero-content h1 {
-                font-size: clamp(2.2rem, 10vw, 2.8rem);
+                font-size: clamp(1.5rem, 8.3vw, 2.8rem);
             }
 
             .typewriter {
@@ -1118,13 +1296,11 @@
                 min-height: 70vh;
             }
 
-            .hero-buttons,
             .project-links {
                 flex-direction: column;
                 width: 100%;
             }
 
-            .hero-buttons .btn,
             .project-links a,
             .contact-form .btn {
                 justify-content: center;
@@ -1201,14 +1377,17 @@
                         <div class="container">
                             <nav>
                                 <a href="#" class="logo">Ramya<span>.dev</span></a>
-                                <div class="main-nav">
-                                    <a href="#hero" class="nav-btn active">Home</a>
+                                <div class="main-nav" id="main-navigation">
+                                <a href="#hero" class="nav-btn active">Home</a>
                                     <a href="#about" class="nav-btn">About</a>
                                     <a href="#skills" class="nav-btn">Skills</a>
                                     <a href="#projects" class="nav-btn">Projects</a>
                                     <a href="#experience" class="nav-btn">Experience</a>
                                     <a href="#contact" class="nav-btn">Contact</a>
                                 </div>
+                                <button class="header-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="main-navigation">
+                                    <i class="fas fa-bars"></i>
+                                </button>
                             </nav>
                         </div>
                     </header>
@@ -1228,9 +1407,11 @@
                                     </p>
                                     <div class="hero-buttons">
                                         <a href="Ramya_Shetty.pdf" download class="btn btn-primary"><i class="fas fa-download"></i> Download Resume</a>
-                                        <a href="https://github.com/Ramya23SH" target="_blank" class="btn btn-outline"><i class="fab fa-github"></i> GitHub</a>
-                                        <a href="#" class="btn btn-outline"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                                        <a href="#contact" class="btn btn-outline"><i class="fas fa-paper-plane"></i> Contact Me</a>
+                                        <div class="hero-icon-links" aria-label="Profile and contact links">
+                                            <a href="https://github.com/Ramya23SH" target="_blank" rel="noopener noreferrer" class="btn btn-outline hero-icon-btn" aria-label="GitHub" title="GitHub"><i class="fab fa-github"></i></a>
+                                            <a href="#" class="btn btn-outline hero-icon-btn" aria-label="LinkedIn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                                            <a href="#contact" class="btn btn-outline hero-icon-btn" aria-label="Contact me" title="Contact me"><i class="fas fa-paper-plane"></i></a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1240,10 +1421,10 @@
                         <section id="about">
                             <div class="container fade-in">
                                 <h2 class="section-title">About <span>Me</span></h2>
-                                <p>I am a dynamic professional with an MCA specializing in Cybersecurity. My passion lies at the intersection of creating innovative software and securing digital ecosystems. I bridge the gap between robust backend development, interactive frontend design, and intelligent AI models.</p>
+                                <p>I am a dynamic professional with an MCA specialized in Cybersecurity. My passion lies at the intersection of creating innovative software and securing digital ecosystems. I bridge the gap between robust backend development, interactive frontend design, cyber security and intelligent AI models.</p>
                                 <br>
                                 <p>Whether it's building responsive web applications, developing machine learning models for anomaly detection, or conducting vulnerability assessments, my goal is to deliver secure, scalable, and intelligent solutions to complex real-world problems.</p>
-                            </div>
+                            </div>Z
                         </section>
             
                         <!-- SKILLS SECTION -->
@@ -1270,8 +1451,6 @@
                                             <span>CSS3</span>
                                             <span>JavaScript</span>
                                             <span>Responsive Design</span>
-                                            <span>DOM</span>
-                                            <span>Flexbox</span>
                                         </div>
                                     </div>
                                     <!-- Backend -->
@@ -1351,11 +1530,15 @@
                             <div class="container">
                                 <h2 class="section-title">Featured <span>Projects</span></h2>
                                 
-                                <div class="filter-buttons fade-in">
-                                    <button class="filter-btn active" data-filter="all">All</button>
-                                    <button class="filter-btn" data-filter="web">Web</button>
-                                    <button class="filter-btn" data-filter="cybersecurity">Cybersecurity</button>
-                                    <button class="filter-btn" data-filter="ai">AI</button>
+                                <input class="filter-input" type="radio" name="project-filter" id="filter-all" checked>
+                                <input class="filter-input" type="radio" name="project-filter" id="filter-web">
+                                <input class="filter-input" type="radio" name="project-filter" id="filter-cybersecurity">
+                                <input class="filter-input" type="radio" name="project-filter" id="filter-ai">
+                                <div class="filter-buttons fade-in" aria-label="Filter projects">
+                                    <label class="filter-btn" for="filter-all">All</label>
+                                    <label class="filter-btn" for="filter-web">Web</label>
+                                    <label class="filter-btn" for="filter-cybersecurity">Cybersecurity</label>
+                                    <label class="filter-btn" for="filter-ai">AI</label>
                                 </div>
 
                                 <div class="projects-grid fade-in">
@@ -1553,6 +1736,9 @@
             const introModal = document.getElementById('intro-modal');
             const continueBtn = document.getElementById('continue-btn');
             const portfolioContentWrapper = document.getElementById('portfolio-content-wrapper');
+            const header = portfolioContentWrapper.querySelector('header');
+            const mainNav = header.querySelector('.main-nav');
+            const headerMenuToggle = header.querySelector('.header-menu-toggle');
             const navLinks = document.querySelectorAll('.nav-btn');
             const sections = document.querySelectorAll('section');
             const contactForm = document.getElementById('contactForm');
@@ -1631,6 +1817,50 @@
                 setTimeout(runCounters, 250);
             }
 
+            // --- Header navigation becomes a hamburger menu after scrolling. ---
+            function updateHeaderMenu() {
+                const isPastHero = portfolioContentWrapper.scrollTop > 320;
+                header.classList.toggle('is-scrolled', isPastHero);
+
+                if (!isPastHero) {
+                    mainNav.classList.remove('menu-open');
+                    headerMenuToggle.setAttribute('aria-expanded', 'false');
+                    const menuIcon = headerMenuToggle.querySelector('i');
+                    menuIcon.classList.add('fa-bars');
+                    menuIcon.classList.remove('fa-times');
+                }
+            }
+
+            headerMenuToggle.addEventListener('click', () => {
+                const isOpen = mainNav.classList.toggle('menu-open');
+                headerMenuToggle.setAttribute('aria-expanded', String(isOpen));
+                headerMenuToggle.classList.remove('is-twirling');
+                void headerMenuToggle.offsetWidth;
+                headerMenuToggle.classList.add('is-twirling');
+                const menuIcon = headerMenuToggle.querySelector('i');
+                menuIcon.classList.toggle('fa-bars', !isOpen);
+                menuIcon.classList.toggle('fa-times', isOpen);
+            });
+
+            headerMenuToggle.addEventListener('animationend', event => {
+                if (event.animationName === 'menu-twirl') {
+                    headerMenuToggle.classList.remove('is-twirling');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mainNav.classList.remove('menu-open');
+                    headerMenuToggle.setAttribute('aria-expanded', 'false');
+                    const menuIcon = headerMenuToggle.querySelector('i');
+                    menuIcon.classList.add('fa-bars');
+                    menuIcon.classList.remove('fa-times');
+                });
+            });
+
+            portfolioContentWrapper.addEventListener('scroll', updateHeaderMenu, { passive: true });
+            updateHeaderMenu();
+
             // --- Smooth scroll & Active Nav State ---
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -1705,31 +1935,6 @@
                 
                 setTimeout(startTyping, typeSpeed);
             }
-
-            // --- Project Filtering Logic ---
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const projectCards = document.querySelectorAll('.project-card');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    // Add active class to clicked button
-                    btn.classList.add('active');
-
-                    const filterValue = btn.getAttribute('data-filter');
-
-                    projectCards.forEach(card => {
-                        if (filterValue === 'all' || card.getAttribute('data-category').includes(filterValue)) {
-                            card.style.display = 'flex';
-                            setTimeout(() => card.style.opacity = '1', 10);
-                        } else {
-                            card.style.opacity = '0';
-                            setTimeout(() => card.style.display = 'none', 300);
-                        }
-                    });
-                });
-            });
 
             // --- Scroll Reveal Animations (Intersection Observer) ---
             const fadeElements = document.querySelectorAll('.fade-in');
