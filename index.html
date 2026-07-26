@@ -379,6 +379,26 @@
             pointer-events: auto;
         }
 
+        /* Floating test toggle for mobile debugging */
+        #menu-float-toggle {
+            position: fixed;
+            right: 12px;
+            bottom: 12px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,#8a2be2,#00f2fe);
+            color: #fff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200000;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+            cursor: pointer;
+            font-size: 20px;
+            user-select: none;
+        }
+
         @keyframes menu-panel-open {
             from { opacity: 0; transform: translateY(-1rem) scale(0.92); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -1894,6 +1914,34 @@
             }
 
             const _hotspot = createDebugHotspot();
+
+            // Create a floating toggle button for mobile testing (bypasses header area)
+            (function createFloatToggle() {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const show = params.get('debugMenu') === '1' || (('maxTouchPoints' in navigator && navigator.maxTouchPoints > 0) || 'ontouchstart' in window);
+                    if (!show) return;
+                    if (document.getElementById('menu-float-toggle')) return;
+                    const btn = document.createElement('div');
+                    btn.id = 'menu-float-toggle';
+                    btn.innerText = '☰';
+                    btn.title = 'Toggle menu (debug)';
+                    btn.style.display = 'flex';
+                    document.body.appendChild(btn);
+
+                    const handler = (ev) => {
+                        try {
+                            ev.preventDefault();
+                        } catch (e) {}
+                        if (typeof toggleMobileMenu === 'function') toggleMobileMenu(ev);
+                    };
+
+                    btn.addEventListener('click', handler);
+                    btn.addEventListener('touchstart', handler, { passive: false });
+                } catch (e) {
+                    // ignore
+                }
+            })();
 
             function closeMobileMenu() {
                 if (mainNav) mainNav.classList.remove('menu-open');
