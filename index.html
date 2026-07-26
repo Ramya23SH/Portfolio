@@ -258,33 +258,23 @@
         }
 
         .main-nav {
-            display: none !important;
-            position: absolute;
-            top: calc(100% + 0.75rem);
-            right: 0.75rem;
-            left: auto;
+            display: flex;
+            position: static;
+            top: auto;
+            right: auto;
             z-index: 110;
-            width: min(18rem, calc(100vw - 2rem));
-            flex-direction: column;
-            gap: 0.5rem;
-            padding: 0.75rem 0.9rem;
-            background: rgba(13, 13, 22, 0.98);
-            border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(18px);
-            opacity: 0;
-            transform: translateY(-0.75rem);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            visibility: hidden;
-            height: 0;
-            overflow: hidden;
-        }
-
-        .main-nav.menu-open {
-            display: flex !important;
+            width: auto;
+            flex-direction: row;
+            gap: 1rem;
+            padding: 0;
+            background: none;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            backdrop-filter: none;
             opacity: 1;
-            transform: translateY(0);
+            transform: none;
+            transition: none;
             visibility: visible;
             height: auto;
             overflow: visible;
@@ -298,8 +288,7 @@
             border-radius: 14px;
             transition: all 0.25s ease;
             font-size: 0.95rem;
-            display: block;
-            width: 100%;
+            display: inline-block;
         }
 
         .main-nav a.active,
@@ -310,23 +299,7 @@
         }
 
         .header-menu-toggle {
-            display: inline-flex !important;
-            position: fixed !important;
-            top: 1rem !important;
-            right: 1rem !important;
-            width: 2.75rem;
-            height: 2.75rem;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(0, 242, 254, 0.55);
-            border-radius: 10px;
-            background: rgba(13, 13, 22, 0.92);
-            color: var(--cyan);
-            cursor: pointer;
-            font-size: 1.15rem;
-            z-index: 9999;
-            visibility: visible !important;
-            opacity: 1 !important;
+            display: none;
         }
 
         .header-menu-toggle.is-open {
@@ -339,6 +312,71 @@
         
         .header-menu-toggle.is-twirling i {
             transform: rotate(0deg);
+        }
+
+        /* Compact header state (desktop): show hamburger and hide inline links */
+        header.compact {
+            background: rgba(13,13,22,0.9);
+            transition: background 200ms ease;
+        }
+
+        header.compact .main-nav {
+            display: none !important;
+        }
+
+        header.compact .header-menu-toggle {
+            display: inline-flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+
+        /* When compact on desktop, use dropdown styling for the nav when opened */
+        header.compact .main-nav.menu-open {
+            display: flex !important;
+            position: fixed !important;
+            top: 3.6rem !important;
+            right: 1rem !important;
+            width: min(20rem, calc(100vw - 2rem)) !important;
+            flex-direction: column !important;
+            padding: 0.75rem 1rem !important;
+            background: rgba(13,13,22,0.96) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 12px 36px rgba(0,0,0,0.35) !important;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            visibility: visible !important;
+            max-height: 60vh !important;
+            overflow: auto !important;
+            z-index: 15000 !important;
+        }
+
+        /* Debug helpers: add ?debugMenu=1 to the URL to visualize hit areas */
+        body.debug-menu .header-menu-toggle {
+            outline: 3px solid rgba(255,0,64,0.9);
+            box-shadow: 0 6px 20px rgba(255,0,64,0.08);
+        }
+
+        body.debug-menu .main-nav {
+            outline: 2px dashed rgba(0,255,128,0.8);
+        }
+
+        /* Hotspot shown when debugging to capture taps directly */
+        #menu-debug-hotspot {
+            position: fixed;
+            top: 0.6rem;
+            right: 0.6rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: rgba(255,0,64,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            color: white;
+            font-size: 12px;
+            pointer-events: auto;
         }
 
         @keyframes menu-panel-open {
@@ -1138,7 +1176,7 @@
                 width: min(18rem, calc(100vw - 2rem)) !important;
                 justify-content: space-around !important;
                 flex-wrap: wrap !important;
-                display: flex !important;
+                display: none !important;
                 visibility: hidden !important;
                 opacity: 0 !important;
                 max-height: 0 !important;
@@ -1155,6 +1193,7 @@
             }
 
             .main-nav.menu-open {
+                display: flex !important;
                 visibility: visible !important;
                 opacity: 1 !important;
                 max-height: 500px !important;
@@ -1760,25 +1799,124 @@
             // --- Smooth scroll & Active Nav State ---
             const menuToggle = document.querySelector('.header-menu-toggle');
             const mainNav = document.getElementById('main-navigation');
-            const menuIcon = menuToggle.querySelector('i');
+            const menuIcon = menuToggle ? menuToggle.querySelector('i') : null;
+
+            // Debug mode: add ?debugMenu=1 to the URL to visualize and force-show the menu
+            try {
+                const _params = new URLSearchParams(window.location.search);
+                if (_params.get('debugMenu') === '1') {
+                    document.body.classList.add('debug-menu');
+                    if (menuToggle) {
+                        menuToggle.style.display = 'inline-flex';
+                        menuToggle.style.visibility = 'visible';
+                        menuToggle.style.opacity = '1';
+                    }
+                    if (mainNav) {
+                        mainNav.style.display = 'none';
+                    }
+                    console.log('[DEBUG] debugMenu=1 enabled: hamburger forced visible');
+                }
+            } catch (e) {
+                console.warn('URLSearchParams not available for debugMenu');
+            }
+
+            // If device supports touch (mobile/tablet), ensure hamburger is visible
+            try {
+                const isTouch = (('maxTouchPoints' in navigator && navigator.maxTouchPoints > 0) || 'ontouchstart' in window);
+                if (isTouch && menuToggle) {
+                    menuToggle.style.display = 'inline-flex';
+                    menuToggle.style.visibility = 'visible';
+                    menuToggle.style.opacity = '1';
+                }
+            } catch (e) {
+                // ignore
+            }
+
+            // Temporary on-screen event log for debugging taps (visible when debugMenu=1)
+            function addMenuEventLog() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('debugMenu') !== '1') return;
+                const panel = document.createElement('div');
+                panel.id = 'menu-debug-panel';
+                panel.style.position = 'fixed';
+                panel.style.left = '12px';
+                panel.style.bottom = '12px';
+                panel.style.zIndex = '99999';
+                panel.style.background = 'rgba(0,0,0,0.6)';
+                panel.style.color = '#fff';
+                panel.style.padding = '8px 10px';
+                panel.style.borderRadius = '8px';
+                panel.style.fontSize = '12px';
+                panel.style.maxWidth = '220px';
+                panel.innerText = 'MENU DEBUG: ready';
+                document.body.appendChild(panel);
+                return panel;
+            }
+
+            const _debugPanel = addMenuEventLog();
+
+            // Create a debug hotspot to capture taps directly (only when debugMenu=1 or touch device)
+            function createDebugHotspot() {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const showHotspot = params.get('debugMenu') === '1' || (('maxTouchPoints' in navigator && navigator.maxTouchPoints > 0) || 'ontouchstart' in window);
+                    if (!showHotspot) return null;
+
+                    const existing = document.getElementById('menu-debug-hotspot');
+                    if (existing) return existing;
+
+                    const hs = document.createElement('div');
+                    hs.id = 'menu-debug-hotspot';
+                    hs.innerText = '☰';
+                    hs.title = 'Menu debug hotspot';
+                    hs.style.cursor = 'pointer';
+                    document.body.appendChild(hs);
+
+                    let counter = 0;
+                    const bump = (ev) => {
+                        ev.preventDefault();
+                        counter += 1;
+                        if (_debugPanel) _debugPanel.innerText = `MENU DEBUG: TAP ${counter}`;
+                        // call the real toggle if present
+                        if (typeof toggleMobileMenu === 'function') {
+                            toggleMobileMenu(ev);
+                        }
+                    };
+
+                    hs.addEventListener('click', bump);
+                    hs.addEventListener('touchstart', bump, { passive: false });
+                    hs.addEventListener('pointerdown', bump);
+
+                    return hs;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            const _hotspot = createDebugHotspot();
 
             function closeMobileMenu() {
-                mainNav.classList.remove('menu-open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-                menuToggle.classList.remove('is-open');
-                menuIcon.classList.remove('fa-xmark');
-                menuIcon.classList.add('fa-bars');
+                if (mainNav) mainNav.classList.remove('menu-open');
+                if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
+                if (menuToggle) menuToggle.classList.remove('is-open');
+                if (menuIcon) {
+                    menuIcon.classList.remove('fa-xmark');
+                    menuIcon.classList.add('fa-bars');
+                }
             }
 
             function openMobileMenu() {
-                mainNav.classList.add('menu-open');
-                menuToggle.setAttribute('aria-expanded', 'true');
-                menuToggle.classList.add('is-open');
-                menuIcon.classList.remove('fa-bars');
-                menuIcon.classList.add('fa-xmark');
+                if (mainNav) mainNav.classList.add('menu-open');
+                if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
+                if (menuToggle) menuToggle.classList.add('is-open');
+                if (menuIcon) {
+                    menuIcon.classList.remove('fa-bars');
+                    menuIcon.classList.add('fa-xmark');
+                }
             }
 
             const toggleMobileMenu = (event) => {
+                console.log('toggleMobileMenu event:', event.type);
                 event.preventDefault();
                 menuToggle.classList.add('is-twirling');
                 setTimeout(() => {
@@ -1786,6 +1924,10 @@
                 }, 500);
 
                 const isOpen = mainNav.classList.toggle('menu-open');
+                console.log('menu state after toggle:', isOpen);
+                if (typeof _debugPanel !== 'undefined' && _debugPanel) {
+                    _debugPanel.innerText = `MENU DEBUG: ${isOpen ? 'OPEN' : 'CLOSED'}`;
+                }
                 if (isOpen) {
                     openMobileMenu();
                 } else {
@@ -1795,8 +1937,38 @@
 
             if (menuToggle) {
                 menuToggle.addEventListener('click', toggleMobileMenu);
-                menuToggle.addEventListener('touchstart', toggleMobileMenu, { passive: false });
             }
+
+            // --- Header compact mode on scroll (desktop behavior) ---
+            (function() {
+                const headerEl = document.querySelector('header');
+                const scroller = portfolioContentWrapper || window;
+                const desktopQ = window.matchMedia('(min-width: 769px)');
+                let lastState = false;
+
+                function updateCompact() {
+                    if (!headerEl) return;
+                    if (!desktopQ.matches) {
+                        headerEl.classList.remove('compact');
+                        return;
+                    }
+                    const scrollTop = portfolioContentWrapper ? portfolioContentWrapper.scrollTop : document.documentElement.scrollTop || window.scrollY;
+                    const shouldCompact = scrollTop > 80;
+                    if (shouldCompact !== lastState) {
+                        lastState = shouldCompact;
+                        if (shouldCompact) headerEl.classList.add('compact'); else headerEl.classList.remove('compact');
+                    }
+                }
+
+                if (portfolioContentWrapper) {
+                    portfolioContentWrapper.addEventListener('scroll', updateCompact, { passive: true });
+                } else {
+                    window.addEventListener('scroll', updateCompact, { passive: true });
+                }
+                window.addEventListener('resize', updateCompact);
+                // initial
+                setTimeout(updateCompact, 50);
+            })();
 
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
